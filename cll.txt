@@ -1,0 +1,147 @@
+List* initialize_list()
+{
+ List* l=(List*) malloc(sizeof(List));
+ l->head=NULL;
+ l->tail=NULL;
+ l->length=0;
+ return l;
+}
+Node* create_node(int data)
+{
+ Node* New=(Node*) malloc(sizeof(Node));
+ New->data=data;
+ New->next=NULL;
+ return New;
+}
+void position_insert(List* cll, int data, int pos)
+{
+ if(pos>cll->length||pos<0)
+ {
+ return;
+ }
+ else
+ {
+ Node* New=create_node(data);
+ Node* temp=cll->head;
+ if(pos==0)
+ {
+ if(cll->head==NULL)
+ {
+ cll->tail=New;
+ New->next=New;
+ }
+ else
+ {
+ New->next=cll->head;
+ cll->tail->next=New;
+ }
+ cll->head=New;
+ }
+ else if(pos==cll->length)
+ {
+ cll->tail->next=New;
+ New->next=cll->head;
+ cll->tail=New;
+ }
+ else
+ {
+ for(int i=1;i<pos;i++)
+ {
+ temp=temp->next;
+ }
+ New->next=temp->next;
+ temp->next=New;
+ }
+ ++cll->length;
+ }
+}
+void position_delete(List* cll, int pos)
+{
+ if(pos<0||pos>cll->length-1)
+ {
+ return;
+ }
+ else
+ {
+ Node* temp=cll->head;
+ Node* prev=NULL;
+
+ if(pos==0)
+ {
+ if(cll->head==cll->tail)
+ {
+ cll->head=NULL;
+ cll->tail=NULL;
+ free(temp);
+ temp=NULL;
+ }
+ else
+ {
+ cll->head=temp->next;
+ cll->tail->next=temp->next;
+ free(temp);
+ temp=NULL;
+ }
+ }
+ else
+ {
+ for(int i=0;i<pos;i++)
+ {
+ prev=temp;
+ temp=temp->next;
+ }
+ if(pos==cll->length-1)
+ {
+ prev->next=temp->next;
+ free(temp);
+ temp=NULL;
+ cll->tail=prev;
+ }
+ else
+ {
+ prev->next=temp->next;
+ free(temp);
+ temp=NULL;
+ }
+ }
+ --cll->length;
+ }
+}
+int josephus(List* cll, int k)
+{
+ Node* temp=cll->head;
+ Node* prev=NULL;
+ for(int i=0;i<=k;i++)
+ {
+ prev=temp;
+ temp=temp->next;
+ }
+ while(cll->length>1)
+ {
+ prev->next=temp->next;
+ free(temp);
+ temp=NULL;
+ prev=prev->next;
+ temp=prev->next;
+ --cll->length;
+ }
+ cll->head=cll->tail=prev;
+ return prev->data;
+}
+void display(List* cll)
+{
+ if(cll->length==0)
+ {
+ printf("EMPTY\n");
+ }
+ else
+ {
+ Node* temp=cll->head;
+ while(temp->next!=cll->head)
+ {
+ printf("%d ",temp->data);
+ temp=temp->next;
+ }
+ printf("%d \n",temp->data);
+ }
+}
